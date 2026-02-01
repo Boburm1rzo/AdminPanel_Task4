@@ -1,4 +1,55 @@
 ﻿@page
 @model UsersModel
 @{
+    ViewData["Title"] = "User Management";
 }
+
+<h3 class="mb-3">User Management</h3>
+
+<!-- Toolbar -->
+<div class="btn-toolbar mb-3" role="toolbar">
+    <div class="btn-group me-2">
+        <button class="btn btn-danger" disabled id="btnBlock">Block</button>
+    </div>
+
+    <div class="btn-group me-2">
+        <button class="btn btn-outline-secondary" disabled id="btnUnblock">
+            <i class="bi bi-unlock"></i>
+        </button>
+        <button class="btn btn-outline-danger" disabled id="btnDelete">
+            <i class="bi bi-trash"></i>
+        </button>
+        <button class="btn btn-outline-danger" disabled id="btnDeleteUnverified">
+            <i class="bi bi-person-x"></i>
+        </button>
+    </div>
+</div>
+
+<!-- Users table -->
+<table class="table table-bordered table-hover align-middle">
+    <thead class="table-light">
+        <tr>
+            <th style="width: 40px;">
+                <input type="checkbox" id="selectAll" />
+            </th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Last Login</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model.Users)
+        {
+            <tr>
+                <td>
+                    <input type="checkbox" class="row-checkbox" value="@user.Id" />
+                </td>
+                <td>@user.Name</td>
+                <td>@user.Email</td>
+                <td>@user.LastSeen.ToString("yyyy-MM-dd HH:mm")</td>
+                <td>@user.Status</td>
+            </tr>
+        }
+    </tbody>
+</table>
