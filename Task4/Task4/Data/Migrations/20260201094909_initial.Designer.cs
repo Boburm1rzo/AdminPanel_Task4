@@ -9,7 +9,7 @@ using Task4.Data;
 
 #nullable disable
 
-namespace Task4.Migrations
+namespace Task4.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     [Migration("20260201094909_initial")]
