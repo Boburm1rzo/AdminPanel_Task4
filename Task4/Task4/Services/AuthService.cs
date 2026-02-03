@@ -4,33 +4,29 @@ using Task4.Models;
 namespace Task4.Services;
 
 public sealed class AuthService(
-    EmailService emailService,
     IPasswordHasher<User> passwordHasher,
     UserService userService)
 {
-    public async Task Login(string email, string password)
+    public async Task<User> Login(string email, string password)
     {
         try
         {
             var user = await userService.GetUserByEmailAsync(email);
 
-            var verificatoin = passwordHasher.VerifyHashedPassword(user, user.PasswordHash, password);
+            if (user.Status == UserStatus.Blocked)
+                throw new UnauthorizedAccessException("User is blocked.");
 
-            if (verificatoin == PasswordVerificationResult.Success)
-            {
+            var result = passwordHasher.VerifyHashedPassword(user, user.PasswordHash, password);
 
-            }
-            else
-            {
-                // Invalid password
+            if (result != PasswordVerificationResult.Success)
                 throw new UnauthorizedAccessException("Invalid email or password.");
-            }
+
+            return user;
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             throw;
         }
-
     }
 
     public async Task Register(User user, string password)
@@ -41,15 +37,10 @@ public sealed class AuthService(
 
             await userService.AddUserAsync(user);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             throw;
         }
-    }
-
-    public Task LogOut()
-    {
-        return Task.CompletedTask;
     }
 
     public Task ForgotPassword(string email)

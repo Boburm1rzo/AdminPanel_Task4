@@ -15,17 +15,11 @@ public sealed class UserService(ApplicationDbContext context)
         return users;
     }
 
-    public async Task<User> GetUserByEmailAsync(string email)
-    {
-        var user = await context.Users.FirstOrDefaultAsync(u => u.Email == email);
+    public async Task<User?> GetUserByEmailAsync(string email)
+        => await context.Users.FirstOrDefaultAsync(u => u.Email == email);
 
-        if (user is null)
-        {
-            throw new ArgumentNullException("User not found.");
-        }
-
-        return user;
-    }
+    public async Task<User> GetUserByIdAsync(int id)
+        => await CheckUserIsExistAsync(id);
 
     public async Task AddUserAsync(User user)
     {
@@ -34,7 +28,7 @@ public sealed class UserService(ApplicationDbContext context)
         await context.SaveChangesAsync();
     }
 
-    public async Task UpdateUserStatusAsync(List<int> ids, UserStatus userStatus)
+    public async Task UpdateUsersStatusAsync(List<int> ids, UserStatus userStatus)
     {
         var users = await context.Users
             .Where(u => ids.Contains(u.Id))
@@ -44,6 +38,23 @@ public sealed class UserService(ApplicationDbContext context)
         {
             user.Status = userStatus;
         }
+
+        await context.SaveChangesAsync();
+    }
+
+    public async Task UpdateUserStatusAsync(int userId, UserStatus userStatus)
+    {
+        var user = await CheckUserIsExistAsync(userId);
+
+        user.Status = userStatus;
+        await context.SaveChangesAsync();
+    }
+
+    public async Task UpdateLastSeenAsync(int userId)
+    {
+        var user = await CheckUserIsExistAsync(userId);
+
+        user.LastSeen = DateTime.UtcNow;
 
         await context.SaveChangesAsync();
     }
@@ -58,11 +69,22 @@ public sealed class UserService(ApplicationDbContext context)
         await context.SaveChangesAsync();
     }
 
-    public async Task DeleteUser(int id)
+    public async Task DeleteSelectedUsersAsync(List<int> ids)
+    {
+        var users = await context.Users
+            .Where(u => ids.Contains(u.Id))
+            .ToListAsync();
+
+        context.Users.RemoveRange(users);
+        await context.SaveChangesAsync();
+    }
+
+    public async Task DeleteUserAsync(int id)
     {
         var user = await CheckUserIsExistAsync(id);
 
         context.Users.Remove(user);
+        await context.SaveChangesAsync();
     }
 
     public async Task<bool> IsUserActiveAsync(int id)

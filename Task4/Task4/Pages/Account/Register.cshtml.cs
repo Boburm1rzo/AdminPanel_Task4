@@ -57,7 +57,7 @@ namespace Task4.Pages.Account
                 var confirmationLink = Url.Page(
                     "/Account/Login",
                     pageHandler: null,
-                    values: new { user.Id },
+                    values: new { confirmUserId = user.Id },
                     protocol: Request.Scheme);
 
                 await emailService.SendConfirmationEmailAsync(user.Email, confirmationLink!);
