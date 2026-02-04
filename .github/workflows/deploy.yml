@@ -1,33 +1,20 @@
-name: Build and deploy container to Azure Web App
+name: Build & Push to ACR
 
 on:
   push:
     branches: ["main"]
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Azure login
-        uses: azure/login@v2
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - uses: actions/checkout@v4
 
       - name: Login to ACR
-        run: |
-          az acr login --name ${{ secrets.ACR_NAME }}
+        run: echo "${{ secrets.ACR_PASSWORD }}" | docker login ${{ secrets.ACR_LOGIN_SERVER }} -u ${{ secrets.ACR_USERNAME }} --password-stdin
 
-      - name: Build and push image
-        run: |
-          docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/task4:${{ github.sha }} .
-          docker push ${{ secrets.ACR_LOGIN_SERVER }}/task4:${{ github.sha }}
+      - name: Build
+        run: docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/task4:latest .
 
-      - name: Deploy to Web App (container)
-        uses: azure/webapps-deploy@v3
-        with:
-          app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
-          images: ${{ secrets.ACR_LOGIN_SERVER }}/task4:${{ github.sha }}
+      - name: Push
+        run: docker push ${{ secrets.ACR_LOGIN_SERVER }}/task4:latest
