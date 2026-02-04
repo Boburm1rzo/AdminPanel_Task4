@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Task4.Data;
@@ -13,38 +14,45 @@ builder.Services.AddScoped<EmailService>();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 
 builder.Services.AddAuthentication("Cookies")
-    .AddCookie("Cookies", options =>
-    {
-        options.LoginPath = "/account/login";
-    });
+    .AddCookie("Cookies", options => { options.LoginPath = "/account/login"; });
 
 builder.Services.AddAuthorization();
-
 builder.Services.AddRazorPages();
 
+var cs = builder.Configuration.GetConnectionString("DefaultConnection")
+         ?? builder.Configuration["ConnectionStrings:DefaultConnection"];
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(cs));
 
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
 {
+    app.UseForwardedHeaders(new ForwardedHeadersOptions
+    {
+        ForwardedHeaders = ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedFor
+    });
+
     app.UseExceptionHandler("/Error");
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
+if (app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
 
 app.UseRouting();
-
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseMiddleware<UserStatusMiddleware>();
 
+app.MapGet("/health", () => Results.Ok("ok"));
+
 app.MapStaticAssets();
-app.MapRazorPages()
-   .WithStaticAssets();
+app.MapRazorPages().WithStaticAssets();
 
 app.MapGet("/", context =>
 {
