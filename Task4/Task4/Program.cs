@@ -19,8 +19,7 @@ builder.Services.AddAuthentication("Cookies")
 builder.Services.AddAuthorization();
 builder.Services.AddRazorPages();
 
-var cs = builder.Configuration.GetConnectionString("DefaultConnection")
-         ?? builder.Configuration["ConnectionStrings:DefaultConnection"];
+var cs = builder.Configuration.GetConnectionString("DefaultConnection") ?? builder.Configuration["ConnectionStrings:DefaultConnection"];
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(cs));
