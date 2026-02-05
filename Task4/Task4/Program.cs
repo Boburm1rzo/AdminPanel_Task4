@@ -14,12 +14,16 @@ builder.Services.AddScoped<EmailService>();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 
 builder.Services.AddAuthentication("Cookies")
-    .AddCookie("Cookies", options => { options.LoginPath = "/account/login"; });
+    .AddCookie("Cookies", options => options.LoginPath = "/account/login");
 
 builder.Services.AddAuthorization();
 builder.Services.AddRazorPages();
 
-var cs = builder.Configuration.GetConnectionString("DefaultConnection") ?? builder.Configuration["ConnectionStrings:DefaultConnection"];
+var cs = builder.Configuration.GetConnectionString("DefaultConnection")
+         ?? builder.Configuration["ConnectionStrings:DefaultConnection"];
+
+if (string.IsNullOrWhiteSpace(cs))
+    throw new Exception("DefaultConnection is missing. Add it in App Service settings.");
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(cs));
@@ -37,20 +41,27 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseHttpsRedirection();
-}
+// Azure containerda https redirectionni hozircha ishlatmaymiz
+// if (app.Environment.IsDevelopment()) app.UseHttpsRedirection();
 
 app.UseRouting();
+
+app.Use(async (ctx, next) =>
+{
+    if (ctx.Request.Path.StartsWithSegments("/health"))
+    {
+        ctx.Response.StatusCode = 200;
+        await ctx.Response.WriteAsync("OK");
+        return;
+    }
+    await next();
+});
+
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseMiddleware<UserStatusMiddleware>();
 
-app.MapGet("/health", () => "OK");
-
-app.MapStaticAssets();
-app.MapRazorPages().WithStaticAssets();
+app.MapRazorPages();
 
 app.Run();
