@@ -48,15 +48,9 @@ app.UseAuthorization();
 
 app.UseMiddleware<UserStatusMiddleware>();
 
-app.MapGet("/health", () => Results.Ok("ok"));
+app.MapGet("/health", () => "OK");
 
 app.MapStaticAssets();
 app.MapRazorPages().WithStaticAssets();
-
-app.MapGet("/", context =>
-{
-    context.Response.Redirect("/admin/users");
-    return Task.CompletedTask;
-});
 
 app.Run();
