@@ -1,0 +1,27 @@
+version: "3.9"
+
+services:
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: task4_sql
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "Bobur2004"
+    ports:
+      - "1433:1433"
+    volumes:
+      - sql_data:/var/opt/mssql
+
+  web:
+    build: .
+    container_name: task4_web
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Production"
+      ConnectionStrings__DefaultConnection: "Server=db,1433;Database=AdminPanelTask4;User Id=sa;Password=Bobur2004;TrustServerCertificate=True"
+    ports:
+      - "80:8080"
+    depends_on:
+      - db
+
+volumes:
+  sql_data:
