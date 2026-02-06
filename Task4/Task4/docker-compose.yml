@@ -1,4 +1,3 @@
-
 services:
   db:
     image: mcr.microsoft.com/mssql/server:2022-latest
@@ -8,17 +7,33 @@ services:
       MSSQL_SA_PASSWORD: "Bobur2004"
     volumes:
       - sql_data:/var/opt/mssql
+    restart: unless-stopped
 
   web:
     build: .
     container_name: task4_web
     environment:
       ASPNETCORE_ENVIRONMENT: "Production"
-      ConnectionStrings__DefaultConnection: "Server=db,1433;Database=AdminPanelTask4;User Id=sa;Password=Bobur2004;TrustServerCertificate=True"
+
+      ConnectionStrings__DefaultConnection: >
+        Server=db,1433;
+        Database=AdminPanelTask4;
+        User Id=sa;
+        Password=Bobur2004;
+        TrustServerCertificate=True
+
     ports:
       - "80:8080"
+
+    volumes:
+      - dp_keys:/root/.aspnet/DataProtection-Keys
+
     depends_on:
       - db
 
+    restart: unless-stopped
+
+
 volumes:
   sql_data:
+  dp_keys:

@@ -5,9 +5,7 @@ namespace Task4.Pages
 {
     public class IndexModel : PageModel
     {
-        public void OnGet()
-        {
-
-        }
+        public IActionResult OnGet()
+       => RedirectToPage("/admin/users");
     }
 }

@@ -22,14 +22,7 @@ builder.Services.AddRazorPages();
 var cs = builder.Configuration.GetConnectionString("DefaultConnection");
 
 if (string.IsNullOrWhiteSpace(cs))
-{
-    // Log qilish
-    Console.WriteLine("ERROR: Connection string topilmadi!");
-    Console.WriteLine($"Environment: {builder.Environment.EnvironmentName}");
-    throw new Exception("DefaultConnection is missing. Check Azure App Service Configuration.");
-}
-
-Console.WriteLine("Connection string topildi ");
+    throw new Exception("DefaultConnection is missing.");
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(cs));
@@ -42,7 +35,7 @@ using (var scope = app.Services.CreateScope())
     {
         var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         db.Database.Migrate();
-        Console.WriteLine("Database migration muvaffaqiyatli ");
+        Console.WriteLine("Database migration muvaffaqiyatli");
     }
     catch (Exception ex)
     {
@@ -56,9 +49,12 @@ if (!app.Environment.IsDevelopment())
     {
         ForwardedHeaders = ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedFor
     });
+
     app.UseExceptionHandler("/Error");
     app.UseHsts();
 }
+
+app.UseStaticFiles();
 
 app.UseRouting();
 
@@ -75,8 +71,9 @@ app.Use(async (ctx, next) =>
 
 app.UseAuthentication();
 app.UseAuthorization();
+
 app.UseMiddleware<UserStatusMiddleware>();
+
 app.MapRazorPages();
 
-Console.WriteLine("Ilova ishga tushdi!");
 app.Run();
