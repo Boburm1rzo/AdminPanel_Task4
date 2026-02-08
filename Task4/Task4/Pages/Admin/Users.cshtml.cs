@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -6,6 +7,7 @@ using Task4.Services;
 
 namespace Task4.Pages.Admin
 {
+    [Authorize]
     public class UsersModel(UserService userService) : PageModel
     {
         public List<User> Users { get; set; } = new();
