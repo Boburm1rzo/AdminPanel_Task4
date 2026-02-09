@@ -1,8 +1,12 @@
-name: Deploy to Server
+name: Deploy to VPS
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
+
+concurrency:
+  group: deploy-main
+  cancel-in-progress: true
 
 jobs:
   deploy:
@@ -14,7 +18,60 @@ jobs:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
-          port: 22
+          port: ${{ secrets.SERVER_PORT || 22 }}
+          command_timeout: 30m
+          script_stop: true
           script: |
+            set -euo pipefail
+
+            echo "== Who am I? =="
             whoami
             hostname
+            date
+
+            # ======= CONFIG (EDIT THESE) =======
+            SERVER_PATH="/root/projects/task4/AdminPanel_Task4/Task4/Task4"
+            APP_URL="http://127.0.0.1:8080"
+            # ===================================
+
+            echo "== Go to project =="
+            cd "$SERVER_PATH"
+            pwd
+
+            echo "== Repo status before =="
+            git rev-parse --is-inside-work-tree
+            git remote -v
+            git status --porcelain || true
+            echo "Commit before:"
+            git log -1 --oneline || true
+
+            echo "== Update code (hard sync with origin/main) =="
+            git fetch origin main
+            git reset --hard origin/main
+            git clean -fd
+
+            echo "Commit after:"
+            git log -1 --oneline
+
+            echo "== Docker compose build & up =="
+            docker compose pull || true
+            docker compose up -d --build
+
+            echo "== Containers =="
+            docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
+
+            echo "== Quick health check =="
+            # 20 seconds wait for app warmup (simple, no drama)
+            for i in {1..20}; do
+              if curl -fsS -I "$APP_URL" >/dev/null 2>&1; then
+                echo "OK: $APP_URL is responding"
+                break
+              fi
+              sleep 1
+              if [ "$i" -eq 20 ]; then
+                echo "ERROR: App did not respond at $APP_URL"
+                exit 1
+              fi
+            done
+
+            echo "✅ Deploy finished"
