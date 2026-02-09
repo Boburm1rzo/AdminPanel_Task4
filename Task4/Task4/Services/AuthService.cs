@@ -13,6 +13,9 @@ public sealed class AuthService(
         {
             var user = await userService.GetUserByEmailAsync(email);
 
+            if (user is null)
+                throw new UnauthorizedAccessException("No users found with this email address.");
+
             if (user.Status == UserStatus.Blocked)
                 throw new UnauthorizedAccessException("User is blocked.");
 

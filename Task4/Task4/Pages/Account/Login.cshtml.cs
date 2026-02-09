@@ -15,7 +15,7 @@ namespace Task4.Pages.Account
     {
 
         [BindProperty]
-        public InputModel Input { get; set; }
+        public required InputModel Input { get; set; }
 
         public class InputModel
         {

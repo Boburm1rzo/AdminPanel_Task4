@@ -23,7 +23,7 @@ services:
         TrustServerCertificate=True
 
     ports:
-      - "8080:8080"
+      - "127.0.0.1:8080:8080"
 
     volumes:
       - dp_keys:/root/.aspnet/DataProtection-Keys

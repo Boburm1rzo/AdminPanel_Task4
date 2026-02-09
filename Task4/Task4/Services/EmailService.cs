@@ -32,7 +32,7 @@ public sealed class EmailService(IConfiguration configuration)
 
             await client.SendMailAsync(emailMessage);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             throw;
         }
