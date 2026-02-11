@@ -3,69 +3,64 @@
 @using Task4.Models
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-<link rel="stylesheet" href="~/css/users.css" type="text/css" />
+<link rel="stylesheet" href="~/css/users.css?v=3" type="text/css" />
 
-<div class="container-fluid px-4 py-4">
-    <div class="row mb-4">
-        <div class="col">
-            <h2 class="fw-bold mb-0">
+<div class="users-page container-fluid px-4 py-4">
+    <div class="users-header">
+        <div class="users-title">
+            <h2 class="fw-bold mb-1">
                 <i class="bi bi-people-fill me-2"></i>Users Management
             </h2>
             <p class="text-muted mb-0">Manage and monitor user accounts</p>
         </div>
-        <div class="col-auto">
-            <span class="badge bg-primary fs-5 px-3 py-2">
+
+        <div class="users-count">
+            <span class="badge bg-primary fs-6 px-3 py-2">
                 Total Users: @Model.Users.Count
             </span>
         </div>
     </div>
 
     <form method="post" asp-page-handler="UpdateStatus">
-        <div class="card shadow-sm border-0 mb-3">
+        <div class="card shadow-sm border-0 mb-3 users-toolbar">
             <div class="card-body">
-                <div class="row align-items-center">
-                    <div class="col-md-8">
-                        <div class="d-flex gap-2">
-                            <button type="submit"
-                                    name="status"
-                                    value="Blocked"
-                                    class="btn btn-outline-primary d-flex align-items-center px-3"
-                                    style="border-radius: 8px;">
-                                <i class="bi bi-lock-fill me-2"></i>Block
-                            </button>
+                <div class="toolbar-row">
+                    <div class="toolbar-actions">
+                        <button type="submit"
+                                name="status"
+                                value="Blocked"
+                                class="btn btn-outline-primary d-flex align-items-center px-3 btn-pill">
+                            <i class="bi bi-lock-fill me-2"></i><span>Block</span>
+                        </button>
 
-                            <button type="submit"
-                                    name="status"
-                                    value="Active"
-                                    class="btn btn-outline-primary d-flex align-items-center justify-content-center"
-                                    style="border-radius: 8px; width: 45px; height: 45px;"
-                                    title="Unblock">
-                                <i class="bi bi-unlock-fill"></i>
-                            </button>
+                        <button type="submit"
+                                name="status"
+                                value="Active"
+                                class="btn btn-outline-primary btn-icon btn-pill"
+                                title="Unblock">
+                            <i class="bi bi-unlock-fill"></i>
+                        </button>
 
-                            <button type="button"
-                                    class="btn btn-outline-danger d-flex align-items-center justify-content-center"
-                                    onclick="deleteSelected();"
-                                    style="border-radius: 8px; width: 45px; height: 45px;"
-                                    title="Delete">
-                                <i class="bi bi-trash-fill"></i>
-                            </button>
+                        <button type="button"
+                                class="btn btn-outline-danger btn-icon btn-pill"
+                                onclick="deleteSelected();"
+                                title="Delete">
+                            <i class="bi bi-trash-fill"></i>
+                        </button>
 
-                            <button type="button"
-                                    class="btn btn-outline-secondary d-flex align-items-center justify-content-center"
-                                    onclick="clearSelection();"
-                                    style="border-radius: 8px; width: 45px; height: 45px;"
-                                    title="Clear selection">
-                                <i class="bi bi-arrow-clockwise"></i>
-                            </button>
-                        </div>
+                        <button type="button"
+                                class="btn btn-outline-secondary btn-icon btn-pill"
+                                onclick="clearSelection();"
+                                title="Clear selection">
+                            <i class="bi bi-arrow-clockwise"></i>
+                        </button>
                     </div>
 
-                    <div class="col-md-4">
+                    <div class="toolbar-filter">
                         <div class="input-group">
-                            <label class="input-group-text">
+                            <span class="input-group-text">
                                 <i class="bi bi-funnel-fill"></i>
-                            </label>
+                            </span>
                             <select id="statusFilter" class="form-select">
                                 <option value="">All Status</option>
                                 <option value="Active">Active</option>
@@ -78,122 +73,122 @@
             </div>
         </div>
 
-        <div class="card shadow-sm border-0">
+        <div class="card shadow-sm border-0 users-table-card">
             <div class="card-body p-0">
-                <table class="table table-hover align-middle mb-0" id="usersTable" style="table-layout: fixed; width: 100%;">
-                    <thead class="table-light">
-                        <tr>
-                            <th style="width: 4%;" class="text-center">
-                                <input type="checkbox"
-                                       id="selectAll"
-                                       class="form-check-input"
-                                       style="width: 20px; height: 20px; cursor: pointer;" />
-                            </th>
-                            <th style="width: 20%;">Name</th>
-                            <th style="width: 30%;">Email</th>
-                            <th style="width: 25%;" class="text-center">Status</th>
-                            <th style="width: 25%;">Last Seen</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        @foreach (var user in Model.Users)
-                        {
-                            var statusClass = user.Status == UserStatus.Active ? "Active" :
-                            user.Status == UserStatus.Blocked ? "Blocked" : "Unverified";
-                            var timeDiff = DateTime.UtcNow - user.LastSeen;
-                            var totalMinutes = (int)timeDiff.TotalMinutes;
-
-                            string displayTime;
-                            if (totalMinutes < 1)
-                                displayTime = "less than a minute ago";
-                            else if (totalMinutes < 60)
-                                displayTime = $"{totalMinutes} minute{(totalMinutes == 1 ? "" : "s")} ago";
-                            else if (totalMinutes < 1440)
-                                displayTime = $"{totalMinutes / 60} hour{(totalMinutes / 60 == 1 ? "" : "s")} ago";
-                            else if (totalMinutes < 10080)
-                                displayTime = $"{totalMinutes / 1440} day{(totalMinutes / 1440 == 1 ? "" : "s")} ago";
-                            else
-                                displayTime = $"{totalMinutes / 10080} week{(totalMinutes / 10080 == 1 ? "" : "s")} ago";
-
-                            var tooltipDate = user.LastSeen.ToString("MMMM dd, yyyy HH:mm:ss");
-
-                            <tr data-status="@statusClass">
-                                <td class="text-center">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0" id="usersTable">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="col-select text-center">
                                     <input type="checkbox"
-                                           name="selectedUserIds"
-                                           value="@user.Id"
-                                           class="form-check-input user-checkbox"
+                                           id="selectAll"
+                                           class="form-check-input"
                                            style="width: 20px; height: 20px; cursor: pointer;" />
-                                </td>
+                                </th>
+                                <th class="col-name">Name</th>
+                                <th class="col-email">Email</th>
+                                <th class="col-status text-center">Status</th>
+                                <th class="col-lastseen">Last Seen</th>
+                            </tr>
+                        </thead>
 
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <div class="avatar-circle me-2 flex-shrink-0">
-                                            @user.Name.Substring(0, 1).ToUpper()
-                                        </div>
-                                        <div class="text-truncate">
-                                            <div class="fw-semibold text-truncate">@user.Name</div>
-                                        </div>
-                                    </div>
-                                </td>
+                        <tbody>
+                            @foreach (var user in Model.Users)
+                            {
+                                var statusClass = user.Status == UserStatus.Active ? "Active" :
+                                user.Status == UserStatus.Blocked ? "Blocked" : "Unverified";
+                                var timeDiff = DateTime.UtcNow - user.LastSeen;
+                                var totalMinutes = (int)timeDiff.TotalMinutes;
 
-                                <td>
-                                    <div class="text-muted text-truncate">
-                                        @user.Email
-                                    </div>
-                                </td>
+                                string displayTime;
+                                if (totalMinutes < 1)
+                                    displayTime = "less than a minute ago";
+                                else if (totalMinutes < 60)
+                                    displayTime = $"{totalMinutes} minute{(totalMinutes == 1 ? "" : "s")} ago";
+                                else if (totalMinutes < 1440)
+                                    displayTime = $"{totalMinutes / 60} hour{(totalMinutes / 60 == 1 ? "" : "s")} ago";
+                                else if (totalMinutes < 10080)
+                                    displayTime = $"{totalMinutes / 1440} day{(totalMinutes / 1440 == 1 ? "" : "s")} ago";
+                                else
+                                    displayTime = $"{totalMinutes / 10080} week{(totalMinutes / 10080 == 1 ? "" : "s")} ago";
 
-                                <td class="text-center">
-                                    @if (user.Status == UserStatus.Active)
-                                    {
-                                        <span class="badge bg-success px-3 py-2">
-                                            <i class="bi bi-check-circle-fill me-1"></i>Active
-                                        </span>
-                                    }
-                                    else if (user.Status == UserStatus.Blocked)
-                                    {
-                                        <span class="badge bg-danger px-3 py-2">
-                                            <i class="bi bi-x-circle-fill me-1"></i>Blocked
-                                        </span>
-                                    }
-                                    else
-                                    {
-                                        <span class="badge bg-warning text-dark px-3 py-2">
-                                            <i class="bi bi-exclamation-circle-fill me-1"></i>Unverified
-                                        </span>
-                                    }
-                                </td>
+                                var tooltipDate = user.LastSeen.ToString("MMMM dd, yyyy HH:mm:ss");
 
-                                <td>
-                                    <div>
-                                        <div class="mb-2" style="font-size: 15px;">@displayTime</div>
-                                        <div class="bar-chart-container"
-                                             data-bs-toggle="tooltip"
-                                             data-bs-placement="top"
-                                             title="@tooltipDate"
-                                             style="cursor: pointer;">
-                                            @{
-                                                var random = new Random(user.Id);
-                                                var bars = new List<int>();
-                                                for (int i = 0; i < 8; i++)
-                                                {
-                                                    bars.Add(random.Next(30, 100));
-                                                }
-                                            }
-                                            <div class="d-flex align-items-end gap-1" style="height: 30px;">
-                                                @foreach (var height in bars)
-                                                {
-                                                    <div class="bar" style="height: @(height)%; width: 8px; background-color: #99b3ff; border-radius: 2px;"></div>
-                                                }
+                                <tr data-status="@statusClass">
+                                    <td class="col-select text-center">
+                                        <input type="checkbox"
+                                               name="selectedUserIds"
+                                               value="@user.Id"
+                                               class="form-check-input user-checkbox"
+                                               style="width: 20px; height: 20px; cursor: pointer;" />
+                                    </td>
+
+                                    <td class="col-name">
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar-circle me-2 flex-shrink-0">
+                                                @user.Name.Substring(0, 1).ToUpper()
+                                            </div>
+                                            <div class="min-w-0">
+                                                <div class="fw-semibold text-truncate">@user.Name</div>
                                             </div>
                                         </div>
-                                    </div>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
+                                    </td>
+
+                                    <td class="col-email">
+                                        <div class="text-muted text-truncate">@user.Email</div>
+                                    </td>
+
+                                    <td class="col-status text-center">
+                                        @if (user.Status == UserStatus.Active)
+                                        {
+                                            <span class="badge bg-success px-3 py-2">
+                                                <i class="bi bi-check-circle-fill me-1"></i>Active
+                                            </span>
+                                        }
+                                        else if (user.Status == UserStatus.Blocked)
+                                        {
+                                            <span class="badge bg-danger px-3 py-2">
+                                                <i class="bi bi-x-circle-fill me-1"></i>Blocked
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-warning text-dark px-3 py-2">
+                                                <i class="bi bi-exclamation-circle-fill me-1"></i>Unverified
+                                            </span>
+                                        }
+                                    </td>
+
+                                    <td class="col-lastseen">
+                                        <div class="lastseen-cell">
+                                            <div class="lastseen-text">@displayTime</div>
+
+                                            <div class="bar-chart-container"
+                                                 data-bs-toggle="tooltip"
+                                                 data-bs-placement="top"
+                                                 title="@tooltipDate">
+                                                @{
+                                                    var random = new Random(user.Id);
+                                                    var bars = new List<int>();
+                                                    for (int i = 0; i < 8; i++)
+                                                    {
+                                                        bars.Add(random.Next(30, 100));
+                                                    }
+                                                }
+                                                <div class="bars">
+                                                    @foreach (var height in bars)
+                                                    {
+                                                        <div class="bar" style="height: @(height)%;"></div>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
 
                 @if (!Model.Users.Any())
                 {
@@ -204,7 +199,96 @@
                 }
             </div>
         </div>
+
+        <div class="users-cards">
+            @foreach (var user in Model.Users)
+            {
+                var statusClass = user.Status == UserStatus.Active ? "Active" :
+                user.Status == UserStatus.Blocked ? "Blocked" : "Unverified";
+                var timeDiff = DateTime.UtcNow - user.LastSeen;
+                var totalMinutes = (int)timeDiff.TotalMinutes;
+
+                string displayTime;
+                if (totalMinutes < 1)
+                    displayTime = "less than a minute ago";
+                else if (totalMinutes < 60)
+                    displayTime = $"{totalMinutes} minute{(totalMinutes == 1 ? "" : "s")} ago";
+                else if (totalMinutes < 1440)
+                    displayTime = $"{totalMinutes / 60} hour{(totalMinutes / 60 == 1 ? "" : "s")} ago";
+                else if (totalMinutes < 10080)
+                    displayTime = $"{totalMinutes / 1440} day{(totalMinutes / 1440 == 1 ? "" : "s")} ago";
+                else
+                    displayTime = $"{totalMinutes / 10080} week{(totalMinutes / 10080 == 1 ? "" : "s")} ago";
+
+                var tooltipDate = user.LastSeen.ToString("MMMM dd, yyyy HH:mm:ss");
+
+                <div class="user-card" data-status="@statusClass">
+                    <div class="card-top">
+                        <label class="check">
+                            <input type="checkbox"
+                                   name="selectedUserIds"
+                                   value="@user.Id"
+                                   class="form-check-input user-checkbox" />
+                        </label>
+
+                        <div class="avatar-circle">
+                            @user.Name.Substring(0, 1).ToUpper()
+                        </div>
+
+                        <div class="card-main">
+                            <div class="name text-truncate">@user.Name</div>
+                            <div class="email text-truncate">@user.Email</div>
+                        </div>
+
+                        <div class="status">
+                            @if (user.Status == UserStatus.Active)
+                            {
+                                <span class="badge bg-success">
+                                    <i class="bi bi-check-circle-fill me-1"></i>Active
+                                </span>
+                            }
+                            else if (user.Status == UserStatus.Blocked)
+                            {
+                                <span class="badge bg-danger">
+                                    <i class="bi bi-x-circle-fill me-1"></i>Blocked
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-warning text-dark">
+                                    <i class="bi bi-exclamation-circle-fill me-1"></i>Unverified
+                                </span>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="card-bottom">
+                        <div class="lastseen">
+                            <i class="bi bi-clock me-1"></i>
+                            <span data-bs-toggle="tooltip" data-bs-placement="top" title="@tooltipDate">
+                                @displayTime
+                            </span>
+                        </div>
+
+                        <div class="mini-bars" aria-hidden="true">
+                            @{
+                                var random = new Random(user.Id);
+                                var bars = new List<int>();
+                                for (int i = 0; i < 8; i++)
+                                {
+                                    bars.Add(random.Next(30, 100));
+                                }
+                            }
+                            @foreach (var height in bars)
+                            {
+                                <div class="bar" style="height: @(height)%;"></div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
     </form>
 </div>
 
-    <script src="~/js/users.js"></script>
+<script src="~/js/users.js"></script>
