@@ -1,29 +1,119 @@
-﻿.avatar-circle {
+﻿.users-page {
+    --radius: 14px;
+    overflow-x: hidden;
+}
+
+.users-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 18px;
+}
+
+.users-title h2 {
+    font-size: 1.55rem;
+}
+
+.users-count .badge {
+    border-radius: 999px;
+}
+
+.users-toolbar .card-body {
+    padding: 16px;
+}
+
+.toolbar-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.toolbar-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.toolbar-filter {
+    min-width: 240px;
+}
+
+.btn-pill {
+    border-radius: 10px !important;
+}
+
+.btn-icon {
+    width: 44px;
+    height: 44px;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    padding: 0 !important;
+}
+
+.users-table-card {
+    border-radius: var(--radius);
+    overflow: hidden;
+}
+
+.table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+#usersTable {
+    width: 100%;
+    min-width: 0; 
+    table-layout: auto;
+}
+
+
+    #usersTable thead th {
+        text-transform: uppercase;
+        letter-spacing: .4px;
+        font-size: .82rem;
+        color: #6c757d;
+        white-space: nowrap;
+    }
+
+.col-select {
+    width: 56px;
+}
+
+.col-name {
+    width: 280px;
+}
+
+.col-email {
+    width: 340px;
+}
+
+.col-status {
+    width: 160px;
+}
+
+.col-lastseen {
+    width: 260px;
+}
+
+.avatar-circle {
     width: 40px;
     height: 40px;
     border-radius: 50%;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-weight: bold;
+    font-weight: 700;
     font-size: 16px;
 }
 
-.table {
-    table-layout: fixed;
-    width: 100%;
+.min-w-0 {
+    min-width: 0;
 }
-
-    .table tbody tr {
-        transition: all 0.2s ease;
-    }
-
-        .table tbody tr:hover {
-            background-color: #f8f9fa;
-            transform: translateX(2px);
-        }
 
 .text-truncate {
     overflow: hidden;
@@ -31,55 +121,168 @@
     white-space: nowrap;
 }
 
-.badge {
-    font-weight: 500;
-    font-size: 0.85rem;
-    white-space: nowrap;
+#usersTable tbody tr {
+    transition: all .18s ease;
 }
 
-.btn {
-    font-weight: 500;
-    transition: all 0.2s ease;
-}
-
-    .btn:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    #usersTable tbody tr:hover {
+        background-color: #f8f9fa;
+        transform: translateX(2px);
     }
 
-.card {
-    border-radius: 12px;
+.lastseen-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
-.form-check-input:checked {
-    background-color: #0d6efd;
-    border-color: #0d6efd;
+.lastseen-text {
+    font-size: 14px;
+    color: #333;
 }
+
+.bar-chart-container {
+    cursor: pointer;
+}
+
+.bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 4px;
+    height: 32px;
+}
+
+    .bars .bar {
+        width: 8px;
+        background-color: #99b3ff;
+        border-radius: 3px;
+        transition: opacity .2s ease;
+    }
 
 .bar-chart-container:hover .bar {
-    opacity: 0.8;
+    opacity: .85;
 }
 
-.bar {
-    transition: opacity 0.2s ease;
+.users-cards {
+    display: none;
+    margin-top: 14px;
+    gap: 12px;
 }
 
-thead th {
-    font-weight: 600;
-    text-transform: uppercase;
-    font-size: 0.85rem;
-    letter-spacing: 0.5px;
-    color: #6c757d;
+.user-card {
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.06);
+    border: 1px solid rgba(0,0,0,.06);
+    padding: 14px;
 }
 
-.tooltip-inner {
-    background-color: #333;
-    color: white;
-    font-size: 13px;
-    padding: 8px 12px;
-    border-radius: 4px;
+    .user-card .card-top {
+        display: grid;
+        grid-template-columns: 28px 44px 1fr auto;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .user-card .check {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .user-card .card-main {
+        min-width: 0;
+    }
+
+    .user-card .name {
+        font-weight: 700;
+        color: #222;
+        line-height: 1.2;
+    }
+
+    .user-card .email {
+        color: #6c757d;
+        font-size: .92rem;
+    }
+
+    .user-card .status .badge {
+        border-radius: 999px;
+        padding: .45rem .65rem;
+        font-weight: 600;
+    }
+
+    .user-card .card-bottom {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px solid rgba(0,0,0,.06);
+    }
+
+    .user-card .lastseen {
+        font-size: .92rem;
+        color: #444;
+        white-space: nowrap;
+    }
+
+    .user-card .mini-bars {
+        display: flex;
+        align-items: flex-end;
+        gap: 3px;
+        height: 26px;
+        flex-shrink: 0;
+    }
+
+        .user-card .mini-bars .bar {
+            width: 6px;
+            background-color: #99b3ff;
+            border-radius: 3px;
+        }
+
+@media (max-width: 992px) {
+    .toolbar-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .toolbar-filter {
+        min-width: 0;
+    }
 }
 
-.tooltip.bs-tooltip-top .tooltip-arrow::before {
-    border-top-color: #333;
+@media (max-width: 768px) {
+    .users-page {
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+    }
+
+    .users-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .users-count {
+        align-self: flex-start;
+    }
+
+    .users-table-card {
+        display: none;
+    }
+
+    .users-cards {
+        display: grid;
+    }
+
+    .btn-icon {
+        width: 42px;
+        height: 42px;
+    }
+
+    .avatar-circle {
+        width: 38px;
+        height: 38px;
+        font-size: 14px;
+    }
 }
