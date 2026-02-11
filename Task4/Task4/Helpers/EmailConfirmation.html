@@ -1,0 +1,31 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Email Confirmation</title>
+    <style>
+    {{styles}}  
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Confirm your email</h1>
+
+        <p>
+            Thanks for signing up. Click the button below to confirm your email address.
+        </p>
+
+        <a class="button" href="{{confirmation_link}}" target="_blank">
+            Confirm Email
+        </a>
+
+        <p class="sub">
+            If the button doesn’t work, copy and paste this link into your browser:
+            <br />
+            {{confirmation_link}}
+        </p>
+    </div>
+</body>
+</html>
