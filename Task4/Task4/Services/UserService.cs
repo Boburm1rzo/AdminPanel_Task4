@@ -6,6 +6,30 @@ namespace Task4.Services;
 
 public sealed class UserService(ApplicationDbContext context)
 {
+    public async Task PasswordRequestAsync(PasswordResetRequest request)
+    {
+        context.PasswordResetRequests.Add(request);
+        await context.SaveChangesAsync();
+    }
+
+    public async Task<PasswordResetRequest?> GetLatestPasswordResetRequestAsync(int userId, string tokenHash)
+        => await context.PasswordResetRequests
+            .Where(r => r.UserId == userId && r.TokenHash == tokenHash)
+            .OrderByDescending(r => r.CreatedAtUtc)
+            .FirstOrDefaultAsync();
+
+    public async Task MarkPasswordResetRequestUsedAsync(PasswordResetRequest request)
+    {
+        request.UsedAtUtc = DateTime.UtcNow;
+        await context.SaveChangesAsync();
+    }
+
+    public async Task UpdatePasswordHashAsync(User user, string newPasswordHash)
+    {
+        user.PasswordHash = newPasswordHash;
+        await context.SaveChangesAsync();
+    }
+
     public async Task<List<User>> GetAllUsers()
     {
         var users = await context.Users

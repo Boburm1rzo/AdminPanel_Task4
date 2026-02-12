@@ -8,6 +8,20 @@ public sealed class EmailService(IConfiguration configuration)
 {
     public async Task SendConfirmationEmailAsync(string userEmail, string confirmationLink)
     {
+        var body = EmailTemplateHelper.BuildConfirmationBody(confirmationLink);
+
+        await SendAsync(userEmail, "Confirm your email", body);
+    }
+
+    public async Task SendResetPasswordLinkAsync(string email, string link)
+    {
+        var body = EmailTemplateHelper.BuildResetPasswordBody(link);
+
+        await SendAsync(email, "Reset your password", body);
+    }
+
+    private async Task SendAsync(string email, string subject, string body)
+    {
         var smtpServer = configuration["Email:Host"];
         var port = int.Parse(configuration["Email:Port"]!);
         var senderEmail = configuration["Email:From"];
@@ -19,17 +33,15 @@ public sealed class EmailService(IConfiguration configuration)
             EnableSsl = true,
         };
 
-        var body = EmailTemplateHelper.BuildConfirmationBody(confirmationLink);
-
         var emailMessage = new MailMessage
         {
             From = new MailAddress(senderEmail!),
-            Subject = "Confirm your email",
+            Subject = subject,
             Body = body,
             IsBodyHtml = true,
         };
 
-        emailMessage.To.Add(userEmail);
+        emailMessage.To.Add(email);
 
         await client.SendMailAsync(emailMessage);
     }
