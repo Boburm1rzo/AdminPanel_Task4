@@ -36,13 +36,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Update="wwwroot\css\emailStyles.css">
+    <Content Update="wwwroot\css\emailstyles.css">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Update="wwwroot\css\forgotPassword.css">
+    <Content Update="wwwroot\css\forgotpassword.css">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Update="wwwroot\css\retestPassword.css">
+    <Content Update="wwwroot\css\retestpassword.css">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
