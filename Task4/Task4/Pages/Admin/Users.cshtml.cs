@@ -11,11 +11,8 @@ namespace Task4.Pages.Admin
     public class UsersModel(UserService userService) : PageModel
     {
         public List<User> Users { get; set; } = new();
-
-        public async Task OnGetAsync()
-        {
-            Users = await userService.GetAllUsers();
-        }
+        public string Sort { get; private set; } = "lastseen";
+        public string Dir { get; private set; } = "desc";
 
         public async Task<IActionResult> OnPostUpdateStatusAsync(
             List<int> selectedUserIds,
@@ -75,5 +72,56 @@ namespace Task4.Pages.Admin
 
             return RedirectToPage();
         }
+
+        public async Task<IActionResult> OnPostClearUnverifiedAsync(int id)
+        {
+            try
+            {
+                await userService.DeleteUnverifiedUsersAsync(id);
+
+                TempData["SuccessMessage"] = "All unverified users were deleted successfully.";
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"Error deleting unverified users: {ex.Message}";
+            }
+
+            return RedirectToPage();
+        }
+
+        public async Task OnGetAsync(string? sort, string? dir)
+        {
+            Sort = string.IsNullOrWhiteSpace(sort) ? "lastseen" : sort.ToLowerInvariant();
+            Dir = (dir?.ToLowerInvariant() == "asc") ? "asc" : "desc";
+
+            var users = await userService.GetAllUsers();
+
+            Users = Sort switch
+            {
+                "name" => Dir == "asc"
+                    ? users.OrderBy(x => x.Name).ToList()
+                    : users.OrderByDescending(x => x.Name).ToList(),
+
+                "email" => Dir == "asc"
+                    ? users.OrderBy(x => x.Email).ToList()
+                    : users.OrderByDescending(x => x.Email).ToList(),
+
+                "lastseen" => Dir == "asc"
+                    ? users.OrderBy(x => x.LastSeen).ToList()
+                    : users.OrderByDescending(x => x.LastSeen).ToList(),
+
+                _ => users.OrderByDescending(x => x.LastSeen).ToList()
+            };
+        }
+
+        public string NextDir(string key)
+           => Sort == key && Dir == "asc" ? "desc" : "asc";
+
+        public string SortIcon(string key)
+        {
+            if (Sort != key) return "bi-arrow-down-up";
+            return Dir == "asc" ? "bi-arrow-up" : "bi-arrow-down";
+        }
+
     }
 }

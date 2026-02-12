@@ -23,7 +23,6 @@ public sealed class EmailService(IConfiguration configuration)
     private async Task SendAsync(string email, string subject, string body)
     {
         var smtpServer = configuration["Email:Host"];
-        Console.WriteLine(configuration["Email:Port"]);
         var port = int.Parse(configuration["Email:Port"]);
         var senderEmail = configuration["Email:From"];
         var password = configuration["Email:Password"];

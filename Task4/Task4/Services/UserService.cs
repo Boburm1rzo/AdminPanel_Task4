@@ -83,7 +83,7 @@ public sealed class UserService(ApplicationDbContext context)
         await context.SaveChangesAsync();
     }
 
-    public async Task DeleteUnverifiedUsersAsync()
+    public async Task DeleteUnverifiedUsersAsync(int id)
     {
         var unverifiedUsers = await context.Users
             .Where(u => u.Status == UserStatus.Unverified)

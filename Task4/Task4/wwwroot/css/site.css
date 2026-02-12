@@ -1,35 +1,25 @@
-:root {
-    --container-max: 1200px;
+html, body {
+    height: 100%;
 }
 
-*,
-*::before,
-*::after {
-    box-sizing: border-box;
+.app-body {
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
 }
 
-html {
-    font-size: 16px;
-    -webkit-text-size-adjust: 100%;
+.app-main {
+    flex: 1 0 auto;
+}
+
+.app-footer {
+    flex-shrink: 0;
+    width: 100%;
+    white-space: normal; 
+    line-height: normal; 
 }
 
 body {
-    margin: 0;
-    min-height: 100dvh;
-    overflow-x: hidden; 
-    overflow-y: auto;
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus,
-.form-control:focus, .form-check-input:focus {
-    box-shadow: 0 0 0 0.15rem rgba(37,140,251,.25);
-}
-
-.container {
-    max-width: var(--container-max);
-}
-
-.form-floating > .form-control-plaintext::placeholder,
-.form-floating > .form-control::placeholder {
-    color: var(--bs-secondary-color);
+    overflow-x: hidden;
 }

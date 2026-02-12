@@ -60,7 +60,7 @@ namespace Task4.Pages.Account
                     values: new { confirmUserId = user.Id },
                     protocol: Request.Scheme);
 
-                await emailService.SendConfirmationEmailAsync(user.Email, confirmationLink!);
+                _ = Task.Run(() => emailService.SendConfirmationEmailAsync(user.Email, confirmationLink!));
             }
             catch (DbUpdateException ex) when (ex.InnerException is SqlException sqlEx &&
                                       (sqlEx.Number == 2601 || sqlEx.Number == 2627))

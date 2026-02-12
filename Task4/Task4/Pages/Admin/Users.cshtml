@@ -21,12 +21,13 @@
         </div>
     </div>
 
-    <form method="post" asp-page-handler="UpdateStatus">
+    <form method="post">
         <div class="card shadow-sm border-0 mb-3 users-toolbar">
             <div class="card-body">
                 <div class="toolbar-row">
                     <div class="toolbar-actions">
                         <button type="submit"
+                                asp-page-handler="UpdateStatus"
                                 name="status"
                                 value="Blocked"
                                 class="btn btn-outline-primary d-flex align-items-center px-3 btn-pill">
@@ -34,6 +35,7 @@
                         </button>
 
                         <button type="submit"
+                                asp-page-handler="UpdateStatus"
                                 name="status"
                                 value="Active"
                                 class="btn btn-outline-primary btn-icon btn-pill"
@@ -44,15 +46,16 @@
                         <button type="button"
                                 class="btn btn-outline-danger btn-icon btn-pill"
                                 onclick="deleteSelected();"
-                                title="Delete">
+                                title="Delete selected">
                             <i class="bi bi-trash-fill"></i>
                         </button>
 
-                        <button type="button"
+                        <button type="submit"
+                                asp-page-handler="ClearUnverified"
                                 class="btn btn-outline-secondary btn-icon btn-pill"
-                                onclick="clearSelection();"
-                                title="Clear selection">
-                            <i class="bi bi-arrow-clockwise"></i>
+                                onclick="OnPostClearUnverified();"
+                                title="Delete all unverified users">
+                            <i class="bi bi-person-x-fill"></i>
                         </button>
                     </div>
 
@@ -85,10 +88,38 @@
                                            class="form-check-input"
                                            style="width: 20px; height: 20px; cursor: pointer;" />
                                 </th>
-                                <th class="col-name">Name</th>
-                                <th class="col-email">Email</th>
-                                <th class="col-status text-center">Status</th>
-                                <th class="col-lastseen">Last Seen</th>
+
+                                <th class="col-name">
+                                    <a class="sort-link"
+                                       asp-page="./Users"
+                                       asp-route-sort="name"
+                                       asp-route-dir="@Model.NextDir("name")">
+                                        Name <i class="bi @Model.SortIcon("name")"></i>
+                                    </a>
+                                </th>
+
+                                <th class="col-email">
+                                    <a class="sort-link"
+                                       asp-page="./Users"
+                                       asp-route-sort="email"
+                                       asp-route-dir="@Model.NextDir("email")">
+                                        Email <i class="bi @Model.SortIcon("email")"></i>
+                                    </a>
+                                </th>
+
+                                <th class="col-status text-center">
+                                    Status
+                                </th>
+
+                                <th class="col-lastseen">
+                                    <a class="sort-link"
+                                       asp-page="./Users"
+                                       asp-route-sort="lastseen"
+                                       asp-route-dir="@Model.NextDir("lastseen")">
+                                        Last Seen <i class="bi @Model.SortIcon("lastseen")"></i>
+                                    </a>
+                                </th>
+
                             </tr>
                         </thead>
 
@@ -97,20 +128,16 @@
                             {
                                 var statusClass = user.Status == UserStatus.Active ? "Active" :
                                 user.Status == UserStatus.Blocked ? "Blocked" : "Unverified";
+
                                 var timeDiff = DateTime.UtcNow - user.LastSeen;
                                 var totalMinutes = (int)timeDiff.TotalMinutes;
 
                                 string displayTime;
-                                if (totalMinutes < 1)
-                                    displayTime = "less than a minute ago";
-                                else if (totalMinutes < 60)
-                                    displayTime = $"{totalMinutes} minute{(totalMinutes == 1 ? "" : "s")} ago";
-                                else if (totalMinutes < 1440)
-                                    displayTime = $"{totalMinutes / 60} hour{(totalMinutes / 60 == 1 ? "" : "s")} ago";
-                                else if (totalMinutes < 10080)
-                                    displayTime = $"{totalMinutes / 1440} day{(totalMinutes / 1440 == 1 ? "" : "s")} ago";
-                                else
-                                    displayTime = $"{totalMinutes / 10080} week{(totalMinutes / 10080 == 1 ? "" : "s")} ago";
+                                if (totalMinutes < 1) displayTime = "less than a minute ago";
+                                else if (totalMinutes < 60) displayTime = $"{totalMinutes} minute{(totalMinutes == 1 ? "" : "s")} ago";
+                                else if (totalMinutes < 1440) displayTime = $"{totalMinutes / 60} hour{(totalMinutes / 60 == 1 ? "" : "s")} ago";
+                                else if (totalMinutes < 10080) displayTime = $"{totalMinutes / 1440} day{(totalMinutes / 1440 == 1 ? "" : "s")} ago";
+                                else displayTime = $"{totalMinutes / 10080} week{(totalMinutes / 10080 == 1 ? "" : "s")} ago";
 
                                 var tooltipDate = user.LastSeen.ToString("MMMM dd, yyyy HH:mm:ss");
 
@@ -170,10 +197,7 @@
                                                 @{
                                                     var random = new Random(user.Id);
                                                     var bars = new List<int>();
-                                                    for (int i = 0; i < 8; i++)
-                                                    {
-                                                        bars.Add(random.Next(30, 100));
-                                                    }
+                                                    for (int i = 0; i < 8; i++) { bars.Add(random.Next(30, 100)); }
                                                 }
                                                 <div class="bars">
                                                     @foreach (var height in bars)
@@ -205,20 +229,16 @@
             {
                 var statusClass = user.Status == UserStatus.Active ? "Active" :
                 user.Status == UserStatus.Blocked ? "Blocked" : "Unverified";
+
                 var timeDiff = DateTime.UtcNow - user.LastSeen;
                 var totalMinutes = (int)timeDiff.TotalMinutes;
 
                 string displayTime;
-                if (totalMinutes < 1)
-                    displayTime = "less than a minute ago";
-                else if (totalMinutes < 60)
-                    displayTime = $"{totalMinutes} minute{(totalMinutes == 1 ? "" : "s")} ago";
-                else if (totalMinutes < 1440)
-                    displayTime = $"{totalMinutes / 60} hour{(totalMinutes / 60 == 1 ? "" : "s")} ago";
-                else if (totalMinutes < 10080)
-                    displayTime = $"{totalMinutes / 1440} day{(totalMinutes / 1440 == 1 ? "" : "s")} ago";
-                else
-                    displayTime = $"{totalMinutes / 10080} week{(totalMinutes / 10080 == 1 ? "" : "s")} ago";
+                if (totalMinutes < 1) displayTime = "less than a minute ago";
+                else if (totalMinutes < 60) displayTime = $"{totalMinutes} minute{(totalMinutes == 1 ? "" : "s")} ago";
+                else if (totalMinutes < 1440) displayTime = $"{totalMinutes / 60} hour{(totalMinutes / 60 == 1 ? "" : "s")} ago";
+                else if (totalMinutes < 10080) displayTime = $"{totalMinutes / 1440} day{(totalMinutes / 1440 == 1 ? "" : "s")} ago";
+                else displayTime = $"{totalMinutes / 10080} week{(totalMinutes / 10080 == 1 ? "" : "s")} ago";
 
                 var tooltipDate = user.LastSeen.ToString("MMMM dd, yyyy HH:mm:ss");
 
@@ -231,9 +251,7 @@
                                    class="form-check-input user-checkbox" />
                         </label>
 
-                        <div class="avatar-circle">
-                            @user.Name.Substring(0, 1).ToUpper()
-                        </div>
+                        <div class="avatar-circle">@user.Name.Substring(0, 1).ToUpper()</div>
 
                         <div class="card-main">
                             <div class="name text-truncate">@user.Name</div>
@@ -243,21 +261,15 @@
                         <div class="status">
                             @if (user.Status == UserStatus.Active)
                             {
-                                <span class="badge bg-success">
-                                    <i class="bi bi-check-circle-fill me-1"></i>Active
-                                </span>
+                                <span class="badge bg-success"><i class="bi bi-check-circle-fill me-1"></i>Active</span>
                             }
                             else if (user.Status == UserStatus.Blocked)
                             {
-                                <span class="badge bg-danger">
-                                    <i class="bi bi-x-circle-fill me-1"></i>Blocked
-                                </span>
+                                <span class="badge bg-danger"><i class="bi bi-x-circle-fill me-1"></i>Blocked</span>
                             }
                             else
                             {
-                                <span class="badge bg-warning text-dark">
-                                    <i class="bi bi-exclamation-circle-fill me-1"></i>Unverified
-                                </span>
+                                <span class="badge bg-warning text-dark"><i class="bi bi-exclamation-circle-fill me-1"></i>Unverified</span>
                             }
                         </div>
                     </div>
@@ -274,10 +286,7 @@
                             @{
                                 var random = new Random(user.Id);
                                 var bars = new List<int>();
-                                for (int i = 0; i < 8; i++)
-                                {
-                                    bars.Add(random.Next(30, 100));
-                                }
+                                for (int i = 0; i < 8; i++) { bars.Add(random.Next(30, 100)); }
                             }
                             @foreach (var height in bars)
                             {
