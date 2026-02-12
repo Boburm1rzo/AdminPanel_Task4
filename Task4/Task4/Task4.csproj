@@ -43,6 +43,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Update="wwwroot\css\forgotpassword.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\css\retestpassword.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="Helpers\EmailConfirmation.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
