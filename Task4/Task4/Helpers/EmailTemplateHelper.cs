@@ -22,4 +22,23 @@ internal static class EmailTemplateHelper
             .Replace("{{styles}}", css)
             .Replace("{{confirmation_link}}", confirmationLink);
     }
+
+    public static string BuildResetPasswordBody(string resetLink)
+    {
+        var htmlPath = Path.Combine(AppContext.BaseDirectory, "Helpers", "ResetPassword.html");
+        var cssPath = Path.Combine(AppContext.BaseDirectory, "wwwroot", "css", "emailStyles.css");
+
+        if (!File.Exists(htmlPath))
+            throw new FileNotFoundException("ResetPassword.html not found", htmlPath);
+
+        if (!File.Exists(cssPath))
+            throw new FileNotFoundException("emailStyles.css not found", cssPath);
+
+        var html = File.ReadAllText(htmlPath, Encoding.UTF8);
+        var css = File.ReadAllText(cssPath, Encoding.UTF8);
+
+        return html
+            .Replace("{{styles}}", css)
+            .Replace("{{reset_link}}", resetLink);
+    }
 }

@@ -65,7 +65,7 @@ namespace Task4.Pages.Account
 
             try
             {
-                user = await authService.Login(Input.Email, Input.Password);
+                user = await authService.LoginAsync(Input.Email, Input.Password);
             }
             catch (UnauthorizedAccessException ex)
             {

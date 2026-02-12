@@ -52,7 +52,7 @@ namespace Task4.Pages.Account
 
             try
             {
-                await authService.Register(user, Input.Password);
+                await authService.RegisterAsync(user, Input.Password);
 
                 var confirmationLink = Url.Page(
                     "/Account/Login",
