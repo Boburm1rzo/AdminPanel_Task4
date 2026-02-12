@@ -204,9 +204,28 @@ body {
     flex-shrink: 0;
 }
 
+.forgot-password {
+    text-align: right;
+    margin-top: 12px;
+}
+
+    .forgot-password a {
+        font-size: 0.9rem;
+        color: #667eea;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+
+        .forgot-password a:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+
+
 @media (max-width: 768px) {
     .login-container {
-        flex-direction: column-reverse !important;  
+        flex-direction: column !important;  
         height: auto !important;
         min-height: 100dvh;
     }
