@@ -20,7 +20,7 @@
     <EmbeddedResource Include="Helpers\ResetPassword.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="wwwroot\css\emailStyles.css">
+    <EmbeddedResource Include="wwwroot\css\emailstyles.css">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
