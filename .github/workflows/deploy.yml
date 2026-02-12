@@ -29,30 +29,24 @@ jobs:
 
             echo "== Go to project folder =="
             SERVER_PATH="/root/projects/task4/AdminPanel_Task4/Task4/Task4"
-            APP_URL="http://127.0.0.1:8080"
+            APP_URL="http://127.0.0.1:8080/health"
 
             cd "$SERVER_PATH"
 
             echo "== Update repository =="
             git fetch origin main
             git reset --hard origin/main
-            git clean -fd
 
-            echo "== Create .env file from GitHub Secrets =="
-            cat > .env << EOF
-            EMAIL_HOST=${{ secrets.EMAIL_HOST }}
-            EMAIL_PORT=${{ secrets.EMAIL_PORT }}
-            EMAIL_FROM=${{ secrets.EMAIL_FROM }}
-            EMAIL_PASSWORD=${{ secrets.EMAIL_PASSWORD }}
-            EOF
+            echo "== Clean untracked files (keep Production config) =="
+            git clean -fd -e appsettings.Production.json
 
-            echo "== Build & Restart Docker containers =="
+            echo "== Rebuild & Restart Docker containers =="
             docker compose down
             docker compose up -d --build
 
-            echo "== Health Check (max 20s) =="
+            echo "== Health check (max 20s) =="
             for i in {1..20}; do
-              if curl -fsS "$APP_URL/health" >/dev/null 2>&1; then
+              if curl -fsS "$APP_URL" >/dev/null 2>&1; then
                 echo "✅ Deploy successful!"
                 exit 0
               fi
@@ -60,6 +54,6 @@ jobs:
               sleep 1
             done
 
-            echo "❌ Deploy failed: app not responding at $APP_URL"
+            echo "❌ Deploy failed: app not responding"
             docker compose logs --tail=50
             exit 1
