@@ -9,18 +9,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Remove="wwwroot\css\emailStyles.css" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Remove="Helpers\ResetPassword.html" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="Helpers\ResetPassword.html">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="wwwroot\css\emailstyles.css">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
@@ -43,6 +36,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Update="wwwroot\css\emailstyles.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Update="wwwroot\css\forgotpassword.css">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
